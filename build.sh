@@ -1,25 +1,39 @@
 #!/usr/bin/env bash
 
-# Instala Chromium e o driver do Selenium
+# Atualiza os pacotes e instala dependências para o Chrome
 apt-get update && apt-get install -y \
-    chromium \
-    chromium-driver \
-    fonts-liberation \
+    wget \
+    unzip \
+    curl \
+    gnupg \
+    libnss3 \
+    libgconf-2-4 \
+    libxss1 \
     libappindicator3-1 \
     libasound2 \
     libatk-bridge2.0-0 \
     libatk1.0-0 \
     libcups2 \
     libdbus-1-3 \
-    libgdk-pixbuf2.0-0 \
-    libnspr4 \
-    libnss3 \
     libxcomposite1 \
     libxdamage1 \
     libxrandr2 \
+    fonts-liberation \
     xdg-utils \
     --no-install-recommends
 
-# Instala suas dependências Python
+# Baixa e instala o Google Chrome
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+dpkg -i google-chrome-stable_current_amd64.deb || apt-get -f install -y
+
+# Instala ChromeDriver compatível com o Chrome instalado
+CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}")
+wget -N https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip
+unzip chromedriver_linux64.zip
+mv chromedriver /usr/local/bin/
+chmod +x /usr/local/bin/chromedriver
+
+# Instala pacotes Python
 pip install --upgrade pip
 pip install -r requirements.txt
