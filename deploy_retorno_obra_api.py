@@ -21,6 +21,11 @@ load_dotenv()
 # --- Inicializa FastAPI
 app = FastAPI(title="LN Automation API")
 
+# ✅ Rota raiz para evitar erro 404
+@app.get("/")
+def read_root():
+    return {"mensagem": "🚀 API de retorno da obra ativa com sucesso!"}
+
 # --- Classe de automação com Selenium
 class BootRetornoObra:
     def __init__(self, username: str, password: str):
@@ -64,7 +69,7 @@ class BootRetornoObra:
             driver.quit()
 
     def acessar_ln(self, driver, max_tentativas=5):
-        url = "https://mingle-portal.inforcloudsuite.com/..."  # ✅ Coloque a URL real aqui
+        url = "https://mingle-portal.inforcloudsuite.com/..."  # ✅ Substitua pela URL real
 
         for attempt in range(max_tentativas):
             try:
@@ -79,7 +84,7 @@ class BootRetornoObra:
                 campo_login.send_keys(self.username)
                 campo_senha.send_keys(self.password + Keys.ENTER)
 
-                time.sleep(5)  # aguarda a resposta do servidor
+                time.sleep(5)  # Aguarda a resposta do servidor
                 return True
             except Exception:
                 time.sleep(2)
