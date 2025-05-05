@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: retorno-obra-api
+    name: ln-automation
     env: python
     buildCommand: ./build.sh
-    startCommand: uvicorn deploy_retorno_obra_api:app --host 0.0.0.0 --port 10000
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 100000
     envVars:
       - key: LN_USERNAME
         value: igor.pessoa@eletrofrio.com.br
