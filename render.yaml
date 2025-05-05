@@ -1,12 +1,11 @@
 services:
   - type: web
-    name: deploy-controle-de-materiais
+    name: retorno-obra-api
     env: python
-    plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn deploy_retorno_obra_api:app --host 0.0.0.0 --port 10000
+    startCommand: uvicorn deploy_retorno_obra_api:app --host 0.0.0.0 --port 8000
     envVars:
-      - key: USERNAME
+      - key: LN_USERNAME
         value: igor.pessoa@eletrofrio.com.br
-      - key: PASSWORD
+      - key: LN_PASSWOR
         value: Douglas@2024a
