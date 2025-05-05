@@ -5,9 +5,9 @@ from io import BytesIO
 from datetime import datetime
 from fastapi import FastAPI, HTTPException
 from selenium import webdriver
-from selenium.webdriver.edge.service import Service as EdgeService
-from selenium.webdriver.edge.options import Options as EdgeOptions
-from webdriver_manager.microsoft import EdgeChromiumDriverManager
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -43,7 +43,7 @@ class BootRetornoObra:
         download_dir = os.path.join(os.path.expanduser("~"), ".fastapi_downloads", self.username)
         os.makedirs(download_dir, exist_ok=True)
 
-        options = EdgeOptions()
+        options = ChromeOptions()
         options.use_chromium = True
         options.add_argument("--headless")
         options.add_argument("--disable-gpu")
@@ -57,8 +57,8 @@ class BootRetornoObra:
         }
         options.add_experimental_option("prefs", prefs)
 
-        service = EdgeService(EdgeChromiumDriverManager().install())
-        driver = webdriver.Edge(service=service, options=options)
+        service = ChromeService(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=options)
 
         try:
             success = self.acessar_ln(driver)
