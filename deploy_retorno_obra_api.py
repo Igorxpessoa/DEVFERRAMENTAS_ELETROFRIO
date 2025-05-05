@@ -28,6 +28,7 @@ def read_root():
 
 # --- Classe de automação com Selenium
 class BootRetornoObra:
+    
     def __init__(self, username: str, password: str):
         self.username = username
         self.password = password
@@ -45,10 +46,14 @@ class BootRetornoObra:
 
         options = ChromeOptions()
         options.use_chromium = True
+        
+        options.binary_location = "/usr/bin/chromium"  # ou "/usr/bin/google-chrome" se estiver usando o .deb
         options.add_argument("--headless")
-        options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
-        options.add_argument("--window-size=1920,1080")
+        options.add_argument("--disable-dev-shm-usage")
+
+        driver = webdriver.Chrome(options=options)
+
 
         prefs = {
             "download.default_directory": download_dir,
@@ -68,26 +73,40 @@ class BootRetornoObra:
         finally:
             driver.quit()
 
-    def acessar_ln(self, driver, max_tentativas=5):
-        url = "https://mingle-portal.inforcloudsuite.com/..."  # ✅ Substitua pela URL real
+    def acessar_ln(self,driver,tentativas_acess_ln=0,max_tentativas_acess_ln=8):
 
-        for attempt in range(max_tentativas):
+        try:
+        
+            driver.get("https://mingle-portal.inforcloudsuite.com/ELETROFRIO_PRD/a8841f8a-7964-4977-b108-14edbb6ddb4f")
+
+        except WebDriverException as e:
+            driver.quit()
+            self.atualizacao.destroy()
+            print("Informação", "Erro ao acessar a página. Verifique sua conexão com a internet e tente novamente.")
+
+
+        while tentativas_acess_ln < max_tentativas_acess_ln:
+
+              
             try:
-                driver.get(url)
-                self.wait_for_page_load(driver)
-
-                campo_login = WebDriverWait(driver, 20).until(
-                    EC.presence_of_element_located((By.ID, "username"))
-                )
-                campo_senha = driver.find_element(By.ID, "pass")
-
-                campo_login.send_keys(self.username)
-                campo_senha.send_keys(self.password + Keys.ENTER)
-
-                time.sleep(5)  # Aguarda a resposta do servidor
-                return True
-            except Exception:
                 time.sleep(2)
+                campo_login = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "username")))
+                campo_senha = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "pass")))
+                campo_login.send_keys(self.username)
+                campo_senha.send_keys(self.password)
+                campo_senha.send_keys(Keys.ENTER)
+                time.sleep(10) 
+                return True
+        
+            except WebDriverException as e:
+                tentativas_acess_ln += 1
+                print("Tentando logar no LN. Tentativa {}/{}".format(tentativas_acess_ln, max_tentativas_acess_ln))
+                driver.get("https://mingle-portal.inforcloudsuite.com/ELETROFRIO_PRD/a8841f8a-7964-4977-b108-14edbb6ddb4f")
+                time.sleep(5)
+
+        print("Número máximo de tentativas atingido.Não foi possivel acessar a pagina do LN")
+        driver.quit()
+        print("Informação", "Não foi possivel acessar a page do LN. Verifique sua conexão e tente novamente mais tarde!")
         return False
 
 # --- Endpoint para disparar automação
