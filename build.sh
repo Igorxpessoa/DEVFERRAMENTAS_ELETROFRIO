@@ -26,7 +26,7 @@ apt-get update && apt-get install -y \
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 dpkg -i google-chrome-stable_current_amd64.deb || apt-get -f install -y
 
-# Instala ChromeDriver compatível com o Chrome instalado
+# Baixa e instala o ChromeDriver compatível
 CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
 CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}")
 wget -N https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip
