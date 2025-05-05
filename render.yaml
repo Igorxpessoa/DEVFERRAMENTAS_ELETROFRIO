@@ -1,11 +1,17 @@
 services:
   - type: web
-    name: retorno-obra-api
+    name: deploy-controle-de-materiais
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn deploy_retorno_obra_api:app --host 0.0.0.0 --port 8000
+    plan: free
+    buildCommand: |
+      apt-get update
+      apt-get install -y wget unzip gnupg
+      wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+      apt install -y ./google-chrome-stable_current_amd64.deb
+      pip install -r requirements.txt
+    startCommand: uvicorn deploy_retorno_obra_api:app --host 0.0.0.0 --port 10000
     envVars:
-      - key: LN_USERNAME
+      - key: USERNAME
         value: igor.pessoa@eletrofrio.com.br
-      - key: LN_PASSWORD
+      - key: PASSWORD
         value: Douglas@2024a
