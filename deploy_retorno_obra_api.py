@@ -96,7 +96,7 @@ def run_ln():
     """
     Executa o robô de retorno de obra no LN.
     Usa credenciais das variáveis de ambiente:
-    LN_USERNAME e LN_PASSWORD.
+    USERNAME e PASSWORD.
     """
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     print(f"[{timestamp}] 🚀 Requisição recebida para executar o robô LN")
