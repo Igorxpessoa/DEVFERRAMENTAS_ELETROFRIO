@@ -31,9 +31,9 @@ rm google-chrome-stable_current_amd64.deb
 # Instala dependências
 apt-get install -y unzip curl
 
-# Baixa a versão compatível do ChromeDriver
-CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+' | head -1)
-CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+# Obtém versão do Chrome e baixa o ChromeDriver compatível
+CHROME_VERSION=$(google-chrome --version | awk '{ print $3 }' | cut -d '.' -f 1-3)
+CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}")
 curl -s -o chromedriver_linux64.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
 unzip chromedriver_linux64.zip
 mv chromedriver /usr/local/bin/chromedriver
