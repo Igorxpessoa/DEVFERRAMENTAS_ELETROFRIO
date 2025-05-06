@@ -53,8 +53,9 @@ class BootRetornoObra:
         }
         options.add_experimental_option("prefs", prefs)
 
-        # Usa o ChromeDriverManager para obter o caminho do ChromeDriver
-        driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+        # Ajuste aqui
+        service = ChromeService(executable_path=ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=options)
 
         try:
             success = self.acessar_ln(driver)
@@ -63,6 +64,7 @@ class BootRetornoObra:
             return {"status": "ok", "download_dir": download_dir}
         finally:
             driver.quit()
+
 
     def acessar_ln(self, driver, tentativas=0, max_tentativas=8):
         url = "https://mingle-portal.inforcloudsuite.com/ELETROFRIO_PRD/a8841f8a-7964-4977-b108-14edbb6ddb4f"
