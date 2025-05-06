@@ -11,6 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException  # Importação adicionada
+from webdriver_manager.chrome import ChromeDriverManager
 from dotenv import load_dotenv
 
 # Logging
@@ -45,8 +46,8 @@ class BootRetornoObra:
         options.add_argument("--disable-extensions")
         options.add_argument("--remote-debugging-port=9222")
 
-        # Definir o caminho do binário do Chromium ou Chrome, conforme disponível no servidor
-        options.binary_location = "/usr/bin/chromium"  # Caminho do Chromium no Render
+        # Defina o caminho correto para o binário do Chromium
+        options.binary_location = "/usr/bin/chromium-browser"  # Ajuste o caminho se necessário
 
         prefs = {
             "download.default_directory": download_dir,
@@ -55,8 +56,8 @@ class BootRetornoObra:
         }
         options.add_experimental_option("prefs", prefs)
 
-        # Usar o caminho do chromedriver já configurado
-        service = ChromeService(executable_path='/usr/lib/chromium-browser/chromedriver')  # Caminho do chromedriver no Render
+        # Use o Service para inicializar o driver com o ChromeDriverManager
+        service = ChromeService(executable_path=ChromeDriverManager().install())
 
         # Inicialize o driver com o serviço configurado
         driver = webdriver.Chrome(service=service, options=options)
