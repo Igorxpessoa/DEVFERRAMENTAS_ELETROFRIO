@@ -53,8 +53,10 @@ class BootRetornoObra:
         }
         options.add_experimental_option("prefs", prefs)
 
-        # Ajuste aqui
+        # Use apenas o Service para especificar o driver
         service = ChromeService(executable_path=ChromeDriverManager().install())
+        
+        # Inicialize o driver sem passar o caminho diretamente
         driver = webdriver.Chrome(service=service, options=options)
 
         try:
