@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Atualiza pacotes e instala dependências do Chrome
+# Atualiza pacotes e instala dependências necessárias
 apt-get update && apt-get install -y \
     wget \
     curl \
@@ -20,19 +20,15 @@ apt-get update && apt-get install -y \
     libxrandr2 \
     fonts-liberation \
     xdg-utils \
+    chromium-driver \
     --no-install-recommends
 
-# Instala o Chrome
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-apt-get update
+# Instala o Chromium
 apt-get install -y chromium
 
-# Instala dependências
-apt-get install -y unzip curl
-
-# Baixa a versão compatível do ChromeDriver
-CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+' | head -1)
-CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+# Baixa a versão compatível do ChromeDriver com o Chromium
+CHROMIUM_VERSION=$(chromium --version | grep -oP '\d+\.\d+\.\d+' | head -1)
+CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROMIUM_VERSION")
 curl -s -o chromedriver_linux64.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
 unzip chromedriver_linux64.zip
 mv chromedriver /usr/local/bin/chromedriver
@@ -42,6 +38,6 @@ rm chromedriver_linux64.zip
 # Adiciona o chromedriver ao PATH
 export PATH=$PATH:/usr/local/bin
 
-# Instala os pacotes Python
+# Instala dependências Python
 pip install --upgrade pip
 pip install -r requirements.txt
