@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-# Atualiza os pacotes e instala dependências para o Chrome
+# Atualiza pacotes e instala dependências do Chrome
 apt-get update && apt-get install -y \
     wget \
-    unzip \
     curl \
+    unzip \
     gnupg \
     libnss3 \
     libgconf-2-4 \
@@ -22,18 +22,18 @@ apt-get update && apt-get install -y \
     xdg-utils \
     --no-install-recommends
 
-# Baixa e instala o Google Chrome
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+# Instala o Google Chrome
+wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 dpkg -i google-chrome-stable_current_amd64.deb || apt-get -f install -y
 
-# Baixa e instala o ChromeDriver compatível
+# Descobre a versão do Chrome e baixa o ChromeDriver compatível
 CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
 CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}")
-wget -N https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip
+wget -q https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip
 unzip chromedriver_linux64.zip
 mv chromedriver /usr/local/bin/
 chmod +x /usr/local/bin/chromedriver
 
-# Instala pacotes Python
+# Instala os pacotes Python
 pip install --upgrade pip
 pip install -r requirements.txt
