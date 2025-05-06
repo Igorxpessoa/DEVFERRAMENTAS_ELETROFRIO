@@ -7,10 +7,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import WebDriverException  # Importação adicionada
 from webdriver_manager.chrome import ChromeDriverManager
 from dotenv import load_dotenv
 
@@ -38,16 +37,15 @@ class BootRetornoObra:
         os.makedirs(download_dir, exist_ok=True)
 
         options = ChromeOptions()
-        options.add_argument("--headless=new")
+        options.add_argument("--headless")  # Modo headless
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--window-size=1920,1080")
         options.add_argument("--disable-extensions")
-        options.add_argument("--remote-debugging-port=9222")
 
-        # Defina o caminho correto para o binário do Chromium
-        options.binary_location = "/usr/bin/chromium-browser"  # Ajuste o caminho se necessário
+        # Definir o caminho do binário do Chromium no Render
+        options.binary_location = "/usr/bin/chromium"  # Caminho para o Chromium no Render
 
         prefs = {
             "download.default_directory": download_dir,
@@ -56,10 +54,10 @@ class BootRetornoObra:
         }
         options.add_experimental_option("prefs", prefs)
 
-        # Use o Service para inicializar o driver com o ChromeDriverManager
+        # Usando o ChromeDriverManager para obter a versão correta do chromedriver
         service = ChromeService(executable_path=ChromeDriverManager().install())
 
-        # Inicialize o driver com o serviço configurado
+        # Inicializa o driver com o Chrome ou Chromium
         driver = webdriver.Chrome(service=service, options=options)
 
         try:
