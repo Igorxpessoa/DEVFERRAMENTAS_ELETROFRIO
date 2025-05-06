@@ -10,8 +10,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import WebDriverException
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import WebDriverException  # Importação adicionada
 from dotenv import load_dotenv
 
 # Logging
@@ -46,6 +45,9 @@ class BootRetornoObra:
         options.add_argument("--disable-extensions")
         options.add_argument("--remote-debugging-port=9222")
 
+        # Definir o caminho do binário do Chromium ou Chrome, conforme disponível no servidor
+        options.binary_location = "/usr/bin/chromium"  # Caminho do Chromium no Render
+
         prefs = {
             "download.default_directory": download_dir,
             "download.prompt_for_download": False,
@@ -53,10 +55,10 @@ class BootRetornoObra:
         }
         options.add_experimental_option("prefs", prefs)
 
-        # Use apenas o Service para especificar o driver
-        service = ChromeService(executable_path=ChromeDriverManager().install())
-        
-        # Inicialize o driver sem passar o caminho diretamente
+        # Usar o caminho do chromedriver já configurado
+        service = ChromeService(executable_path='/usr/lib/chromium-browser/chromedriver')  # Caminho do chromedriver no Render
+
+        # Inicialize o driver com o serviço configurado
         driver = webdriver.Chrome(service=service, options=options)
 
         try:
@@ -66,7 +68,6 @@ class BootRetornoObra:
             return {"status": "ok", "download_dir": download_dir}
         finally:
             driver.quit()
-
 
     def acessar_ln(self, driver, tentativas=0, max_tentativas=8):
         url = "https://mingle-portal.inforcloudsuite.com/ELETROFRIO_PRD/a8841f8a-7964-4977-b108-14edbb6ddb4f"
@@ -86,7 +87,6 @@ class BootRetornoObra:
 
 @app.post("/run_ln")
 def run_ln():
-    
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     logger.info(f"[{timestamp}] Iniciando automação LN")
 
