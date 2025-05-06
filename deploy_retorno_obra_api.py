@@ -13,14 +13,14 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
 from dotenv import load_dotenv
 
-# Configuração de logging
+# Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Carrega variáveis de ambiente do .env, se existir
+# Variáveis de ambiente
 load_dotenv()
 
-# Inicializa FastAPI
+# Inicializa API
 app = FastAPI(title="LN Automation API")
 
 @app.get("/")
@@ -33,7 +33,7 @@ class BootRetornoObra:
         self.password = password
 
     def automate_ln(self):
-        download_dir = os.path.join(os.path.expanduser("~"), ".fastapi_downloads", self.username)
+        download_dir = "/tmp/ln_download"
         os.makedirs(download_dir, exist_ok=True)
 
         options = ChromeOptions()
@@ -43,7 +43,6 @@ class BootRetornoObra:
         options.add_argument("--disable-dev-shm-usage")
         options.add_argument("--window-size=1920,1080")
         options.add_argument("--disable-extensions")
-        options.add_argument("--single-process")
         options.add_argument("--remote-debugging-port=9222")
 
         prefs = {
@@ -59,50 +58,44 @@ class BootRetornoObra:
         try:
             success = self.acessar_ln(driver)
             if not success:
-                raise RuntimeError("❌ Falha no login LN. Verifique usuário/senha ou disponibilidade da URL.")
+                raise RuntimeError("❌ Falha no login LN.")
             return {"status": "ok", "download_dir": download_dir}
         finally:
             driver.quit()
 
-    def acessar_ln(self, driver, tentativas_acess_ln=0, max_tentativas_acess_ln=8):
+    def acessar_ln(self, driver, tentativas=0, max_tentativas=8):
         url = "https://mingle-portal.inforcloudsuite.com/ELETROFRIO_PRD/a8841f8a-7964-4977-b108-14edbb6ddb4f"
-        while tentativas_acess_ln < max_tentativas_acess_ln:
+        while tentativas < max_tentativas:
             try:
                 driver.get(url)
-                time.sleep(2)
-                campo_login = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "username")))
-                campo_senha = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "pass")))
-                campo_login.send_keys(self.username)
-                campo_senha.send_keys(self.password)
-                campo_senha.send_keys(Keys.ENTER)
+                WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "username"))).send_keys(self.username)
+                WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.ID, "pass"))).send_keys(self.password + Keys.ENTER)
                 time.sleep(10)
                 return True
             except WebDriverException:
-                tentativas_acess_ln += 1
-                logger.warning(f"Tentando logar no LN. Tentativa {tentativas_acess_ln}/{max_tentativas_acess_ln}")
+                tentativas += 1
+                logger.warning(f"Tentativa {tentativas}/{max_tentativas} de login LN")
                 time.sleep(5)
-        logger.error("Número máximo de tentativas atingido. Não foi possível acessar a página do LN.")
+        logger.error("❌ Não foi possível acessar o LN após várias tentativas.")
         return False
 
 @app.post("/run_ln")
 def run_ln():
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    logger.info(f"[{timestamp}] 🚀 Requisição recebida para executar o robô LN")
+    logger.info(f"[{timestamp}] Iniciando automação LN")
 
     try:
-        username = os.environ.get("LN_USERNAME")
-        password = os.environ.get("LN_PASSWORD")
+        username = os.getenv("LN_USERNAME")
+        password = os.getenv("LN_PASSWORD")
 
         if not username or not password:
-            logger.error(f"[{timestamp}] ❌ Credenciais não encontradas")
-            raise HTTPException(status_code=400, detail="Credenciais LN não configuradas nas variáveis de ambiente.")
+            raise HTTPException(status_code=400, detail="Credenciais não configuradas.")
 
         bot = BootRetornoObra(username, password)
         result = bot.automate_ln()
 
-        logger.info(f"[{timestamp}] ✅ Automação finalizada com sucesso!")
-        return {"message": "Automação concluída", **result}
-
+        logger.info(f"[{timestamp}] Automação concluída.")
+        return {"message": "Automação concluída com sucesso!", **result}
     except Exception as e:
-        logger.error(f"[{timestamp}] ❌ Erro durante a automação: {str(e)}")
+        logger.error(f"[{timestamp}] Erro: {e}")
         raise HTTPException(status_code=500, detail=str(e))
