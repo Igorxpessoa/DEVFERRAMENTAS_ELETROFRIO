@@ -11,6 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
+from webdriver_manager.chrome import ChromeDriverManager
 from dotenv import load_dotenv
 
 # Logging
@@ -53,7 +54,7 @@ class BootRetornoObra:
         options.add_experimental_option("prefs", prefs)
 
         service = ChromeService(executable_path="/usr/local/bin/chromedriver")
-        driver = webdriver.Chrome(service=service, options=options)
+        driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
 
         try:
             success = self.acessar_ln(driver)
@@ -81,6 +82,7 @@ class BootRetornoObra:
 
 @app.post("/run_ln")
 def run_ln():
+    
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     logger.info(f"[{timestamp}] Iniciando automação LN")
 
